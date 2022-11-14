@@ -2,7 +2,7 @@ import 'dart:convert';
 // import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:flutter_auth/Screens/Model/Categories.dart';
+import 'package:stisla/Screens/Model/Categories.dart';
 
 import 'ui/listview_page.dart';
 

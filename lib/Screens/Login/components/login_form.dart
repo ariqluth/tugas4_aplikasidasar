@@ -57,30 +57,44 @@ class _PageLoginState extends State<LoginForm> {
 
     try {
       final response = await http.post(
-          Uri.parse("https://api.sobatcoding.com/testing/login"),
-          headers: {'Content-Type': 'application/json; charset=UTF-8'},
+          // Uri.parse("https://api.sobatcoding.com/testing/login"),
+          Uri.parse("https://5699-114-6-31-174.ap.ngrok.io/api/auth/login"),
+          // Uri.parse("https://V2starter.putraprima.id/api/auth/login"),
+          headers: {
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Charset': 'utf-8'
+          },
           body: jsonEncode({
             "email": email,
             "password": password,
+            "device_name": "handphone",
           }));
 
       final output = jsonDecode(response.body);
       if (response.statusCode == 200) {
-        Navigator.of(_keyLoader.currentContext!, rootNavigator: false).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(
-            output['message'],
-            style: const TextStyle(fontSize: 16),
-          )),
-        );
+        Navigator.of(context).pop();
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //       content: Text(
+        //     output['message'],
+        //     style: const TextStyle(fontSize: 16),
+        //   )),
+        // );
 
-        if (output['success'] == true) {
-          saveSession(email);
-        }
+        saveSession(email).then(() {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (BuildContext context) => const Mains(),
+            ),
+            (route) => false,
+          );
+        });
+
+        if (output['success'] == true) {}
         //debugPrint(output['message']);
       } else {
-        Navigator.of(_keyLoader.currentContext!, rootNavigator: false).pop();
+        Navigator.of(context).pop();
         //debugPrint(output['message']);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -102,14 +116,6 @@ class _PageLoginState extends State<LoginForm> {
     SharedPreferences pref = await SharedPreferences.getInstance();
     await pref.setString("email", email);
     await pref.setBool("is_login", true);
-
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(
-        builder: (BuildContext context) => const Mains(),
-      ),
-      (route) => false,
-    );
   }
 
   void ceckLogin() async {
