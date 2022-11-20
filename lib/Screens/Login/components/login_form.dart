@@ -6,6 +6,7 @@ import '../../../components/already_have_an_account_acheck.dart';
 import '../../../constants.dart';
 import 'package:http/http.dart' as http;
 import '../../Main/Mains.dart';
+import '../../Model/Token.dart';
 import '../../Signup/signup_screen.dart';
 
 class LoginForm extends StatefulWidget {
@@ -39,8 +40,8 @@ class HeadClipper extends CustomClipper<Path> {
 
 class _PageLoginState extends State<LoginForm> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-  var txtEditEmail = TextEditingController();
-  var txtEditPwd = TextEditingController();
+  var txtEditEmail = TextEditingController(text: 'superadmin@gmail.com');
+  var txtEditPwd = TextEditingController(text: 'password');
 
   void _validateInput() {
     if (_formKey.currentState!.validate()) {
@@ -58,8 +59,10 @@ class _PageLoginState extends State<LoginForm> {
     try {
       final response = await http.post(
           // Uri.parse("https://api.sobatcoding.com/testing/login"),
-          Uri.parse("https://5699-114-6-31-174.ap.ngrok.io/api/auth/login"),
+          // Uri.parse("https://5699-114-6-31-174.ap.ngrok.io/api/auth/login"),
           // Uri.parse("https://V2starter.putraprima.id/api/auth/login"),
+          Uri.parse(
+              "https://0968-2001-448a-5040-456c-1845-3a47-2476-4236.ap.ngrok.io/api/auth/login"),
           headers: {
             'Content-Type': 'application/json; charset=UTF-8',
             'Charset': 'utf-8'
@@ -71,38 +74,49 @@ class _PageLoginState extends State<LoginForm> {
           }));
 
       final output = jsonDecode(response.body);
-      if (response.statusCode == 200) {
-        Navigator.of(context).pop();
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(
-        //       content: Text(
-        //     output['message'],
-        //     style: const TextStyle(fontSize: 16),
-        //   )),
-        // );
+      final token = Token.fromJson(output);
+      final pref = await SharedPreferences.getInstance();
 
-        saveSession(email).then(() {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (BuildContext context) => const Mains(),
-            ),
-            (route) => false,
+      if (token.token != null) {
+        await pref.setString('token', token.token!);
+        setState(() {});
+        if (!mounted) {
+          return;
+        }
+
+        if (response.statusCode == 200) {
+          Navigator.of(context).pop();
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   SnackBar(
+          //       content: Text(
+          //     output['message'],
+          //     style: const TextStyle(fontSize: 16),
+          //   )),
+          // );
+
+          saveSession(email).then(() {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (BuildContext context) => const Mains(),
+              ),
+              (route) => false,
+            );
+          });
+
+          if (output['success'] == true) {}
+          //debugPrint(output['message']);
+        } else {
+          Navigator.of(context).pop();
+          //debugPrint(output['message']);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(
+              output.toString(),
+              style: const TextStyle(fontSize: 16),
+            )),
           );
-        });
-
-        if (output['success'] == true) {}
-        //debugPrint(output['message']);
-      } else {
-        Navigator.of(context).pop();
-        //debugPrint(output['message']);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(
-            output.toString(),
-            style: const TextStyle(fontSize: 16),
-          )),
-        );
+        }
       }
     } catch (e) {
       Navigator.of(_keyLoader.currentContext!, rootNavigator: false).pop();
@@ -114,6 +128,9 @@ class _PageLoginState extends State<LoginForm> {
 
   saveSession(String email) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
+    // tokken e
+    final token = pref.getString('token');
+    print("Token From Shared Pref $token");
     await pref.setString("email", email);
     await pref.setBool("is_login", true);
   }

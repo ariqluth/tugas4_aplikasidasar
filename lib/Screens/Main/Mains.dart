@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:http/http.dart' as http;
 import '../Login/login_screen.dart';
 import 'listview_pages.dart';
 
@@ -34,26 +34,46 @@ class _MainPage extends State<Mains> {
 
   logOut() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    setState(() {
-      preferences.remove("is_login");
-      preferences.remove("email");
-    });
+    final token = preferences.getString('token');
 
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(
-        builder: (BuildContext context) => const LoginScreen(),
-      ),
-      (route) => false,
+    // logout proccess our
+    final response = await http.post(
+      // Uri.parse("https://api.sobatcoding.com/testing/login"),
+      // Uri.parse("https://5699-114-6-31-174.ap.ngrok.io/api/auth/login"),
+      // Uri.parse("https://V2starter.putraprima.id/api/auth/login"),
+      Uri.parse(
+          "https://0968-2001-448a-5040-456c-1845-3a47-2476-4236.ap.ngrok.io/api/auth/logout"),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Charset': 'utf-8',
+        'Authorization': 'Bearer $token',
+      },
     );
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-          content: Text(
-        "Berhasil logout",
-        style: TextStyle(fontSize: 16),
-      )),
-    );
+    if (!mounted) return;
+    if (response.statusCode == 204) {
+      setState(() {
+        preferences.remove("is_login");
+        preferences.remove("email");
+        preferences.remove("token");
+      });
+
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (BuildContext context) => const LoginScreen(),
+        ),
+        (route) => false,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text(
+          "Berhasil logout",
+          style: TextStyle(fontSize: 16),
+        )),
+      );
+    }
   }
 
   @override
