@@ -72,7 +72,7 @@ class _PageListViewState extends State<PageListView> {
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                                UpdateCategories(categories: listCities[index]),
+                                UpdateCategories(categories: item),
                           ),
                         );
                       },
@@ -83,7 +83,9 @@ class _PageListViewState extends State<PageListView> {
                   backgroundColor: Colors.red,
                   child: IconButton(
                       color: Colors.white,
-                      onPressed: () {},
+                      onPressed: () {
+                        link.deleteCategories(item);
+                      },
                       icon: const Icon(Icons.delete)))
             ]),
       ),
@@ -123,10 +125,7 @@ class _PageListViewState extends State<PageListView> {
                     return bulidListItem(index);
                   });
             } else {
-              return const Center(
-                  child: CircularProgressIndicator(
-                color: Color.fromARGB(255, 12, 6, 121),
-              ));
+              return const Center(child: CircularProgressIndicator());
             }
           }),
     );

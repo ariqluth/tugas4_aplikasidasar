@@ -15,7 +15,7 @@ class CategoriesService {
     String? token = await sp.getString("token");
 
     if (token == null) {
-      throw new Exception('TOKEN TIdak ada/ NULL');
+      throw new Exception('ERROR TOKEN NULL');
     }
 
     var url = Uri.parse(baseUrl + 'categories');
