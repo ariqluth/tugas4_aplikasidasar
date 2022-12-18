@@ -41,8 +41,7 @@ class _MainPage extends State<Mains> {
       // Uri.parse("https://api.sobatcoding.com/testing/login"),
       // Uri.parse("https://5699-114-6-31-174.ap.ngrok.io/api/auth/login"),
       // Uri.parse("https://V2starter.putraprima.id/api/auth/login"),
-      Uri.parse(
-          "https://0968-2001-448a-5040-456c-1845-3a47-2476-4236.ap.ngrok.io/api/auth/logout"),
+      Uri.parse("https://5afd-36-85-58-61.ap.ngrok.io/api/auth/logout"),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
         'Charset': 'utf-8',

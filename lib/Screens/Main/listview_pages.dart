@@ -20,7 +20,7 @@ class _PageListViewState extends State<PageListView> {
     try {
       var response = await http.get(
           Uri.parse(
-            'https://v2starter.putraprima.id/api/categories',
+            'https://5afd-36-85-58-61.ap.ngrok.io/api/categories',
           ),
           headers: {
             'Content-Type': 'application/json; charset=UTF-8',

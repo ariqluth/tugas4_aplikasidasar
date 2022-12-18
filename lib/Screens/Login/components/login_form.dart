@@ -61,8 +61,7 @@ class _PageLoginState extends State<LoginForm> {
           // Uri.parse("https://api.sobatcoding.com/testing/login"),
           // Uri.parse("https://5699-114-6-31-174.ap.ngrok.io/api/auth/login"),
           // Uri.parse("https://V2starter.putraprima.id/api/auth/login"),
-          Uri.parse(
-              "https://0968-2001-448a-5040-456c-1845-3a47-2476-4236.ap.ngrok.io/api/auth/login"),
+          Uri.parse("https://5afd-36-85-58-61.ap.ngrok.io/api/auth/login"),
           headers: {
             'Content-Type': 'application/json; charset=UTF-8',
             'Charset': 'utf-8'
@@ -79,7 +78,9 @@ class _PageLoginState extends State<LoginForm> {
 
       if (token.token != null) {
         await pref.setString('token', token.token!);
-        setState(() {});
+
+        // setState(() {});
+
         if (!mounted) {
           return;
         }
@@ -129,16 +130,17 @@ class _PageLoginState extends State<LoginForm> {
   saveSession(String email) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     // tokken e
-    final token = pref.getString('token');
-    print("Token From Shared Pref $token");
     await pref.setString("email", email);
     await pref.setBool("is_login", true);
+    final token = pref.getString('token');
+    print("Token From Shared Pref $token");
   }
 
   void ceckLogin() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     var islogin = pref.getBool("is_login");
     if (islogin != null && islogin) {
+      // ignore: use_build_context_synchronously
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
