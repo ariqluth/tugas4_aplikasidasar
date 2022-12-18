@@ -1,41 +1,49 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import 'package:http/http.dart' as http;
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 
 import 'dart:convert';
 
-import 'package:stisla/Service/category_service.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
+
+import 'package:stisla/Screens/Main/listview_pages.dart';
 
 import '../../../Service/baseurl_service.dart';
-import '../listview_pages.dart';
+import '../../../Service/category_service.dart';
+import '../../Model/Categories.dart';
 
-class CreateCategory extends StatefulWidget {
-  const CreateCategory({Key? key}) : super(key: key);
+class UpdateCategories extends StatefulWidget {
+  Categories categories;
+  UpdateCategories({
+    Key? key,
+    required this.categories,
+  }) : super(key: key);
 
   @override
-  State<CreateCategory> createState() => _CreateCategoryState();
+  State<UpdateCategories> createState() => _UpdateCategoriesState();
 }
 
-class _CreateCategoryState extends State<CreateCategory> {
-  TextEditingController __name = TextEditingController(text: "Category");
+class _UpdateCategoriesState extends State<UpdateCategories> {
+  TextEditingController __name = TextEditingController();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    __name.text = widget.categories!.name;
   }
 
   @override
   savepressed() async {
-    String password = __name.text;
+    String newName = __name.text;
+    Categories? newCategory = widget.categories;
 
-    if (password.isNotEmpty) {
+    if (newName.isNotEmpty) {
       http.Response response =
-          await CategoriesService.Createcategories(__name.text);
+          await CategoriesService.updateCategories(newCategory, __name.text);
       Map responseMap = jsonDecode(response.body);
       print(response.body);
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -43,7 +51,7 @@ class _CreateCategoryState extends State<CreateCategory> {
           ),
         );
       } else {
-        errorSnackBar(context, 'Failed to save data');
+        errorSnackBar(context, 'Failed to update');
       }
     } else {
       errorSnackBar(context, 'enter Category fields');
@@ -54,7 +62,7 @@ class _CreateCategoryState extends State<CreateCategory> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add Category"),
+        title: const Text("Edit Category"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -83,7 +91,7 @@ class _CreateCategoryState extends State<CreateCategory> {
                 style: ElevatedButton.styleFrom(
                   primary: Colors.green, // Background color
                 ),
-                child: Text('Save'),
+                child: Text('Update'),
               ),
             ),
           ],

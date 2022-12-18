@@ -32,7 +32,7 @@ class CategoriesService {
     return payload.map((e) => Categories.fromJson(e)).toList();
   }
 
-  static Future<Response> Createcategories(
+  static Future<Response> createcategories(
     String name,
   ) async {
     var url = Uri.parse(baseUrl + 'categories');
@@ -97,10 +97,10 @@ class CategoriesService {
     return response;
   }
 
-  static Future updateCategories(Categories categories, String newName) async {
+  static Future updateCategories(Categories category, String newName) async {
     final sp = await SharedPreferences.getInstance();
 
-    var Url = Uri.parse(baseUrl + 'categories/${categories.id}');
+    var Url = Uri.parse(baseUrl + 'categories/${category.id}');
 
     final token = sp.getString('token');
 

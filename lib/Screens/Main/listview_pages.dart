@@ -2,10 +2,11 @@ import 'dart:convert';
 // import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:stisla/Screens/Main/categories/categoriesUpdate.dart';
 import 'package:stisla/Screens/Model/Categories.dart';
 
-import 'categories/categoriesUpdate.dart';
-import 'ui/listview_page.dart';
+import '../../Service/category_service.dart';
+import 'categories/categoriesCreate.dart';
 
 class PageListView extends StatefulWidget {
   const PageListView({Key? key}) : super(key: key);
@@ -16,41 +17,44 @@ class PageListView extends StatefulWidget {
 
 class _PageListViewState extends State<PageListView> {
   List<Categories> listCities = [];
+  final link = CategoriesService();
 
-  getListCities() async {
-    try {
-      var response = await http.get(
-          Uri.parse(
-            'https://v2starter.putraprima.id/api/categories',
-          ),
-          headers: {
-            'Content-Type': 'application/json; charset=UTF-8',
-          });
-
-      if (response.statusCode == 200) {
-        final dataDecode = jsonDecode(response.body);
-        setState(() {
-          for (var i = 0; i < dataDecode.length; i++) {
-            listCities.add(Categories.fromJson(dataDecode[i]));
-          }
-        });
-      }
-    } catch (e) {
-      throw Exception(e.toString());
-    }
+  getLink() async {
+    listCities = await link.categoriesList();
   }
+  // getListCities() async {
+  //   try {
+  //     var response = await http.get(
+  //         Uri.parse(
+  //           'https://5afd-36-85-58-61.ap.ngrok.io/api/categories',
+  //         ),
+  //         headers: {
+  //           'Content-Type': 'application/json; charset=UTF-8',
+  //         });
+
+  //     if (response.statusCode == 200) {
+  //       final dataDecode = jsonDecode(response.body);
+  //       setState(() {
+  //         for (var i = 0; i < dataDecode.length; i++) {
+  //           listCities.add(Categories.fromJson(dataDecode[i]));
+  //         }
+  //       });
+  //     }
+  //   } catch (e) {
+  //     throw Exception(e.toString());
+  //   }
+  // }
 
   @override
   void initState() {
-    getListCities();
+    getLink();
     super.initState();
   }
 
   Widget bulidListItem(index) {
     var item = listCities[index];
 
-    return ListKota(nama: item.name.toString());
-    /*return Card(
+    return Card(
       child: ListTile(
         title:
             Text(item.name.toString(), style: const TextStyle(fontSize: 18.0)),
@@ -63,7 +67,15 @@ class _PageListViewState extends State<PageListView> {
                   backgroundColor: Colors.grey.shade400,
                   child: IconButton(
                       color: Colors.white,
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                UpdateCategories(categories: listCities[index]),
+                          ),
+                        );
+                      },
                       icon: const Icon(Icons.edit))),
               const SizedBox(width: 5),
               CircleAvatar(
@@ -75,7 +87,7 @@ class _PageListViewState extends State<PageListView> {
                       icon: const Icon(Icons.delete)))
             ]),
       ),
-    );*/
+    );
   }
 
   @override
@@ -97,10 +109,25 @@ class _PageListViewState extends State<PageListView> {
           ),
         ],
       ),
-      body: ListView.builder(
-          itemCount: listCities.length,
-          itemBuilder: (BuildContext context, int index) {
-            return bulidListItem(index);
+      body: FutureBuilder(
+          future: link.categoriesList(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              List<Categories>? listCategories =
+                  snapshot.data as List<Categories>?;
+              print(listCategories);
+              return ListView.builder(
+                  itemCount: listCities.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    var categories = listCities![index];
+                    return bulidListItem(index);
+                  });
+            } else {
+              return const Center(
+                  child: CircularProgressIndicator(
+                color: Color.fromARGB(255, 12, 6, 121),
+              ));
+            }
           }),
     );
   }
